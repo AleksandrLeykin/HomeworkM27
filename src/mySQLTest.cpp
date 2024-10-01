@@ -1,0 +1,146 @@
+#include "mySQLTest.h"
+// #include <cppconn/statement.h>
+// #include <cppconn/resultset.h>
+
+mySQLTest::mySQLTest() {    
+    if(mySQLDB())
+    	std::cout << "connection to server SQL is OK!" << std::endl;
+	else         
+        std::cout << "Error: can`t connect to server " << std::endl;    
+}
+
+mySQLTest::~mySQLTest() {
+    mysql_close(&mysql);
+    std::cout << "exit sql!" << std::endl;
+}
+
+bool mySQLTest::mySQLDB() {
+    if(connectDB()) { 
+        //Сооздание базы данных 
+	    std::string createDB = "CREATE DATABASE if not EXISTS chattestdb";
+	    std::string useDB = "use chattestdb";
+        if (mysql_real_query(&mysql, createDB.c_str(), createDB.length()) != 0 ) {
+        std::cout << "Error DATABASE mySQL request not sent! " << std::endl;
+        return false;
+        }
+
+        //подключаемся к базе
+        if (mysql_real_query(&mysql, useDB.c_str(), useDB.length()) != 0)
+        {
+            std::cout << "Error use DATABASE mySQL!" << std::endl;
+        }
+
+        //Создание таблиц
+        std::string createTable = "CREATE TABLE IF NOT EXISTS user("
+		        "id SERIAL PRIMARY KEY AUTO_INCREMENT, "
+		        "name VARCHAR(255) NOT NULL, "
+		        "surname VARCHAR(255) NOT NULL, "
+		        "email VARCHAR(255) NOT NULL, "
+		        "password VARCHAR(32) NOT NULL)";
+        if (mysql_real_query(&mysql, createTable.c_str(), createTable.length()) != 0) {
+            std::cout << "Error table mySQL request not sent! " << std::endl;
+            return false;
+        }        
+
+        //user1_id - получатель, user2_id - отправитель
+        std::string createTableMessage = "CREATE TABLE IF NOT EXISTS messages("
+		        "id SERIAL PRIMARY KEY AUTO_INCREMENT, "
+		        "user1_id integer NOT NULL REFERENCES user(id), "
+		        "user2_id integer NOT NULL REFERENCES user(id), "
+		        "data_create DATETIME NOT NULL, "
+		        "messages TEXT NOT NULL)";
+        if (mysql_real_query(&mysql, createTableMessage.c_str(), createTableMessage.length()) != 0) {
+            std::cout << "Error table mySQL request not sent! " << std::endl;
+            return false;
+        }       
+        return true;
+    }
+    else
+    return false;
+}
+
+bool mySQLTest::connectDB() {
+    mysql_init(&mysql);
+    if (&mysql == nullptr) {
+		std::cout << "Error: can`t create MySQL - description" << std::endl;
+		return false;
+	}
+    // Подключаемся к серверу
+    if (!mysql_real_connect(&mysql, "localhost", "root", "root", nullptr, 0, nullptr, 0)) {
+	    // Если нет возможности установить соединение с БД выводим сообщение об ошибке
+	    std::cout << "Error: can`t connect to database " << mysql_error(&mysql) << std::endl;
+	    return false;
+    }
+    mysql_set_character_set(&mysql, "utf8");
+    return true;
+}
+
+std::string mySQLTest::addingUser(const std::string &name, const std::string &surname, const std::string &email, const std::string &pas)
+{
+    int i =0;
+    //подготовка запроса
+    std::string record_user = "INSERT INTO user(id, name, surname, email, password)"
+		" VALUES(default, '" + name + "', '" + surname + "', '" + email + "', '" + pas + "')";
+    
+    //запрос
+    std::string selectUser = "select name, surname from user";
+	mysql_real_query(&mysql, selectUser.c_str(), selectUser.length());
+
+    //строка с новым именем
+	std::string newName = name + surname;
+	//проверка имени в таблице через цикл
+	if (res = mysql_store_result(&mysql)) {
+		while (row = mysql_fetch_row(res)) {
+			std::string currentName = "";
+			for (i = 0; i < mysql_num_fields(res); ++i) {
+				currentName += row[i];
+			}
+			//просмотр зарегистрированных клиентов
+			//std::cout << currentName << std::endl;
+			if (newName == currentName) {
+				mysql_close(&mysql);
+				return "name taken!";				
+			}
+		}
+	}
+	else
+	    std::cout << "Error MySql # " << mysql_error(&mysql) << std::endl;
+
+	//если имя не занято записываем его
+	mysql_real_query(&mysql, record_user.c_str(), record_user.length());
+	mysql_close(&mysql);
+	return "You new user myChat! If you want to send a message, enter - 'y', to exit - 'exit'";
+}
+
+std::string mySQLTest::userLogin(const std::string &name, const std::string &pass)
+{
+    int i = 0;
+
+    //запрос
+	std::string selectUser = "select name, password from user";
+	mysql_real_query(&mysql, selectUser.c_str(), selectUser.length());
+
+    //строка с новым именем
+	std::string newName = name + pass;
+	//проверка имени в таблице через цикл
+	if (res = mysql_store_result(&mysql)) {
+		while (row = mysql_fetch_row(res)) {
+			std::string currentName = "";
+			for (i = 0; i < mysql_num_fields(res); ++i) {
+				currentName += row[i];
+			}
+			//просмотр зарегистрированных клиентов
+			//std::cout << currentName << std::endl;
+			if (newName == currentName) {
+				mysql_close(&mysql);
+				newName = "";				
+				newName = "Hello " + name;
+				return newName;
+			}
+		}
+	}
+	else
+		std::cout << "Error MySql # " << mysql_error(&mysql) << std::endl;
+
+   return "name or password is incorrect!"; return std::string();
+}
