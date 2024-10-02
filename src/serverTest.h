@@ -5,14 +5,20 @@
 #include <string>
 
 #if defined (__linux__)
+
 #include <sys/socket.h>
 #include <unistd.h> //для read()
 #include <netinet/in.h> //для структуры sockaddr_in
 
 #elif defined(_WIN64)
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <stdio.h>
+
+#pragma comment(lib, "Ws2_32.lib")
 
 #endif
 
@@ -26,29 +32,31 @@ const int PORT_NUM = 7777;
 const short BUFF_SIZE = 1024;
 
 //подключение пользователя
-void SetToClient(int client_socket);
+void SetToClient(SOCKET client_socket);
 
 //Регистрация пользователя User registration
-void userRegistration(int client_sock, char buff[BUFF_SIZE]);
+void userRegistration(SOCKET client_sock, char buff[BUFF_SIZE]);
 
 //enter chat вход в чат
-void enterChat(int client_sock, char buff[BUFF_SIZE]);
+void enterChat(SOCKET client_sock, char buff[BUFF_SIZE]);
 
 //exchange with user обмен с пользователем
-std::string recAndTransMess(int client_sock,const std::string& str, char buff[BUFSIZ]);
+std::string recAndTransMess(SOCKET client_sock,const std::string& str, char buff[BUFSIZ]);
 
 class m_server {
 private:
-//Структура, описывающая адрес интернет-сокета.
-#if defined (__linux__)
+    //Структура, описывающая адрес интернет-сокета.
     sockaddr_in serveraddr{}, clientaddr{};
     socklen_t length{};
+#if defined (__linux__)    
+    
     // Создадим сокет  Let's create a socket
     int socket_server{}, socket_client{};
 
 #elif defined(_WIN64)
-    SOCKET server_socket{};
-	SOCKET client_socket{};
+    SOCKET socket_server{};
+	SOCKET socket_client{};
+   
     //Initializing the Socket Library Инициализация Библиотеки cокетов
 	WSAData wsData = {0};	
 #endif

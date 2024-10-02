@@ -1,7 +1,7 @@
 #include <iostream>
-//#include "mySQLTest.h"
 #include "serverTest.h"
 #include <thread>
+#include <conio.h>
 
 //выход из сервера
 void ToExit();
@@ -21,13 +21,29 @@ int main(int args, char* argv[]) {
     return 0;
 }
 
+
+#if defined (__linux__)
 void ToExit() {
     //выход из сервера не доработано
     char c;
     std::cout << "To exit, press ESC and Enter Для выхода нажмите  ESC и ввод" << std::endl;
     c = getchar();
     if (c == 27) {
-       // std::cout << "enter" << std::endl;
+        // std::cout << "enter" << std::endl;
         exit(0);
-    }    
+    }
 }
+#elif defined(_WIN64)
+
+void ToExit() {
+    //выход из сервера не доработано
+    char c;
+    std::cout << "To exit, press ESC and Enter Для выхода нажмите  ESC и ввод" << std::endl;
+    c = getch();
+    if (c == 27) {
+        // std::cout << "enter" << std::endl;
+        exit(0);
+    }
+}
+#endif
+

@@ -3,11 +3,19 @@
 #include <string>
 #include <memory>
 
+
+#if defined (__linux__)
 #include <mysql/mysql.h>
 // #include "mysql_connection.h"
 // #include <cppconn/driver.h>
 // #include <cppconn/exception.h>
 // #include <cppconn/prepared_statement.h>
+#elif defined(_WIN64)
+#include <mysql.h>
+
+#endif
+
+
 
 
 
