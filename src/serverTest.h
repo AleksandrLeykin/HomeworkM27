@@ -31,17 +31,45 @@
 const int PORT_NUM = 7777;
 const short BUFF_SIZE = 1024;
 
+//display received messages показ прин¤тых сообщений
+std::string receivedMessages(const std::string& name);
+
+//write message to table запись сooбщени¤ в таблицу 
+std::string writingMessage(const std::string& name1, const std::string& name2, const std::string& strMes);
+
+#if defined (__linux__)
+//подключение пользователя
+void SetToClient(int client_socket);
+
+//Регистрация пользователя User registration
+std::string userRegistration(int client_sock, char buff[BUFF_SIZE]);
+
+//enter chat вход в чат
+std::string enterChat(int client_sock, char buff[BUFF_SIZE]);
+
+//name verification сверка имени
+bool nameVerification(int client_sock, char buff[BUFSIZ]);
+
+//exchange with user обмен с пользователем
+std::string recAndTransMess(int client_sock,const std::string& str, char buff[BUFSIZ]);
+
+#elif defined(_WIN64)
 //подключение пользователя
 void SetToClient(SOCKET client_socket);
 
 //Регистрация пользователя User registration
-void userRegistration(SOCKET client_sock, char buff[BUFF_SIZE]);
+std::string  userRegistration(SOCKET client_sock, char buff[BUFF_SIZE]);
 
 //enter chat вход в чат
-void enterChat(SOCKET client_sock, char buff[BUFF_SIZE]);
+std::string enterChat(SOCKET client_sock, char buff[BUFF_SIZE]);
+
+//name verification сверка имени
+bool nameVerification(SOCKET client_sock, char buff[BUFSIZ]);
 
 //exchange with user обмен с пользователем
 std::string recAndTransMess(SOCKET client_sock,const std::string& str, char buff[BUFSIZ]);
+
+#endif
 
 class m_server {
 private:

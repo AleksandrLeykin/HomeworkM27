@@ -1,8 +1,10 @@
 #include <iostream>
 #include "serverTest.h"
 #include <thread>
-#include <conio.h>
 
+#if defined (_WIN64)
+#include <conio.h>
+#endif
 //выход из сервера
 void ToExit();
 

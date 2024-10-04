@@ -12,12 +12,7 @@
 // #include <cppconn/prepared_statement.h>
 #elif defined(_WIN64)
 #include <mysql.h>
-
 #endif
-
-
-
-
 
 struct mySQLTest {
      mySQLTest();
@@ -28,6 +23,16 @@ struct mySQLTest {
 	                    const std::string& email, const std::string& pas);	
 	//вход пользователя enter user
 	std::string userLogin(const std::string& name, const std::string& pass);
+
+	//просмотр пользователей
+	std::string getUser();	
+
+	//view messages просмотр сообщений
+	std::string viewMessages(const std::string name);
+
+	//writing Message запись сообщения
+	bool writingMessage(const std::string& name1, const std::string& name2, const std::string& strMes);
+
 private:     
      //дескриптор
 	MYSQL mysql;

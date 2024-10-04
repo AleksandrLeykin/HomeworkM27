@@ -17,13 +17,13 @@
 
 #define CLEAR_BUFFER memset(buff, 0, BUFF_SIZE);
 
-
 #endif
-
-
 
 //переменная - количество активных пользователей
 int nclients = 0;
+//имя получателя сообщения message recipient name
+std::string messageRecipientName = "";
+std::string clientName = "";
 
 void m_server::server_loading()
 {
@@ -110,31 +110,64 @@ void m_server::server_loading()
 
 #if defined (__linux__)
 void SetToClient(int client_socket) {
-
     char buffer[1024];
     int bytes_rectv = 0;
    //прием строки от клиента и возвращение ее клиенту
    while (bytes_rectv = recv(client_socket, &buffer[0], BUFF_SIZE, 0) && bytes_rectv != -1) {
-#elif defined(_WIN64)   
-   void SetToClient(SOCKET client_socket) {
+#elif defined(_WIN64)
+void SetToClient(SOCKET client_socket)
+{
 
-       char buffer[1024];
-       int bytes_rectv = 0;
-   //прием строки от клиента и возвращение ее клиенту
-   while ((bytes_rectv = recv(client_socket, &buffer[0], BUFF_SIZE, 0)) && bytes_rectv != SOCKET_ERROR) {
-#endif   
-        memset(buffer, 0, 1024);
+    char buffer[1024];
+    int bytes_rectv = 0;
+    // прием строки от клиента и возвращение ее клиенту
+    while ((bytes_rectv = recv(client_socket, &buffer[0], BUFF_SIZE, 0)) && bytes_rectv != SOCKET_ERROR)
+    {
+#endif          
         std::string result = "";
+        
         switch (*buffer)
         {        
         case 'r':
-            userRegistration(client_socket, buffer);
+            clientName = userRegistration(client_socket, buffer);
             break;
         case 'v':
-            enterChat(client_socket, buffer);
+            clientName = enterChat(client_socket, buffer);
+            break;            
+        case 'm':
+            result = receivedMessages(clientName);
+            if (result.empty()) {
+                result = "you no messages!";
+            }
+            else
+                result = "messages to you:\n" + result;
+                send(client_socket, result.c_str(), result.length(), 0);          
+            break;   
+        case 'u':
+        {
+            mySQLTest mysql;
+			result = mysql.getUser();			
+			send(client_socket, result.c_str(), result.size(), 0);
+        }
             break;
-        
+        case 'n':
+            if (nameVerification(client_socket, buffer)) {
+					std::string strMessage = recAndTransMess(client_socket, "Enter message!", buffer);
+					//запись сooбщения в таблицу
+					std::string msg = writingMessage(messageRecipientName, clientName, strMessage);
+
+					result = msg + "\nprodolzim?? Enter - 'n' dly message, enter - 'exit' dly vixoda";
+					//completion = false;
+					send(client_socket, result.c_str(), result.length(), 0);
+				}
+				else {
+					result = "There is no such user! ";
+					send(client_socket, result.c_str(), result.length(), 0);
+				}
+            break;
         default:
+            result = "Invalid character entered!";
+            send(client_socket, result.c_str(), result.length(), 0);	
             break;
         }
    }
@@ -158,9 +191,9 @@ void SetToClient(int client_socket) {
 }
 
 #if defined (__linux__)
-void userRegistration(client_sock, char buff[BUFF_SIZE])
+std::string userRegistration(int client_sock, char buff[BUFF_SIZE])
 #elif defined(_WIN64)   
-void userRegistration(SOCKET client_sock, char buff[BUFF_SIZE])
+std::string userRegistration(SOCKET client_sock, char buff[BUFF_SIZE])
 #endif   
 {
     std::string str = "Enter you name:";
@@ -198,16 +231,16 @@ void userRegistration(SOCKET client_sock, char buff[BUFF_SIZE])
 	result = buff;
 
     if (result == "y") {
-	   // result = mysql.userLogin(clientName, pass);
+	   result = mysql.userLogin(name, pass);
 		send(client_sock, result.c_str(), result.length(), 0);
-	}
-    
+	}    
+    return name;
 }
 
 #if defined (__linux__)
-void enterChat(int client_sock, char buff[BUFF_SIZE])
+std::string enterChat(int client_sock, char buff[BUFF_SIZE])
 #elif defined(_WIN64)   
-void enterChat(SOCKET client_sock, char buff[BUFF_SIZE])
+std::string enterChat(SOCKET client_sock, char buff[BUFF_SIZE])
 #endif  
 {
     std::string clientname = recAndTransMess(client_sock, "Enter you name:", buff);
@@ -216,7 +249,59 @@ void enterChat(SOCKET client_sock, char buff[BUFF_SIZE])
 
     mySQLTest mysql;
     std::string result = mysql.userLogin(clientname, pass);
-    send(client_sock, result.c_str(), result.length(), 0);	
+    send(client_sock, result.c_str(), result.length(), 0);
+    return clientname;
+}
+
+std::string receivedMessages(const std::string &name)
+{
+    mySQLTest mysql;
+    std::string result = "";
+	result = mysql.viewMessages(name);	
+	return result;
+}
+
+bool nameVerification(int client_sock, char buff[BUFSIZ])
+{
+    std::string nameRequest = "Who to send message to?"; // Кому отправить сообщение?
+
+    //запрос имени name request
+	messageRecipientName = recAndTransMess(client_sock, nameRequest, buff);
+
+    mySQLTest mysql;
+	std::string result = mysql.getUser();
+
+    //запись имен из таблицы
+	std::vector<std::string> userName;
+    //имя из списка name from the list
+	std::string name = "";
+	for (int i = 0; i < result.size(); i++) {
+		name += result[i];
+		if (result[i] == ' ' || result[i] == '\0') {
+			userName.push_back(name);
+			name = "";
+		}
+	}
+	//сверка имени
+	for (int i = 0; i < userName.size(); i++) {
+		if (userName[i] == messageRecipientName + " ") {
+			return true;
+		}
+		if (i == (userName.size() - 1) && userName[i] != (messageRecipientName + " ")) {
+			return false;			
+		}
+	}
+    return false;
+}
+
+std::string writingMessage(const std::string &name1, const std::string &name2, const std::string &strMes)
+{
+    mySQLTest mysql;
+	if (mysql.writingMessage(name1, name2, strMes)) {		
+		return "Message sent!";
+	}
+	else 
+		return "Message not sent!";
 }
 
 #if defined (__linux__)
