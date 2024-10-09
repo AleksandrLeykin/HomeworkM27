@@ -4,9 +4,11 @@ set(PROJECT_NAME myServerDB)
 
 project(${PROJECT_NAME})
 
+if(UNIX)
 # Укажите путь к MySQL Connector/C++
 set(MYSQL_CONNECTOR_CPP_INCLUDE_DIR "/path/to/mysql-connector-c++/include")
 set(MYSQL_CONNECTOR_CPP_LIB_DIR "/path/to/mysql-connector-c++/lib")
+endif()
 
 add_executable(${PROJECT_NAME} 
                 src/main.cpp 
