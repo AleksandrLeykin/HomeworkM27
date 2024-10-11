@@ -51,7 +51,7 @@ std::string enterChat(int client_sock, char buff[BUFF_SIZE]);
 bool nameVerification(int client_sock, char buff[BUFSIZ]);
 
 //exchange with user обмен с пользователем
-std::string recAndTransMess(int client_sock,const std::string& str, char buff[BUFSIZ]);
+std::string recAndTransMess(int client_sock, const std::string& str, char buff[BUFSIZ]);
 
 #elif defined(_WIN64)
 //подключение пользователя
@@ -67,7 +67,7 @@ std::string enterChat(SOCKET client_sock, char buff[BUFF_SIZE]);
 bool nameVerification(SOCKET client_sock, char buff[BUFSIZ]);
 
 //exchange with user обмен с пользователем
-std::string recAndTransMess(SOCKET client_sock,const std::string& str, char buff[BUFSIZ]);
+std::string recAndTransMess(SOCKET client_sock, const std::string& str, char buff[BUFSIZ]);
 
 #endif
 
@@ -77,24 +77,23 @@ private:
     sockaddr_in serveraddr{}, clientaddr{};
     socklen_t length{};
 #if defined (__linux__)    
-    
+
     // Создадим сокет  Let's create a socket
     int socket_server{}, socket_client{};
 
 #elif defined(_WIN64)
     SOCKET socket_server{};
-	SOCKET socket_client{};
-   
+    SOCKET socket_client{};
+
     //Initializing the Socket Library Инициализация Библиотеки cокетов
-	WSAData wsData = {0};	
+    WSAData wsData = { 0 };
 #endif
-//загрузка_сервера
-void server_loading();
-void close_server();
+    //загрузка_сервера
+    void server_loading();
+    void close_server();
 
 public:
-m_server() { server_loading();}
-~m_server() { close_server(); }
+    m_server() { server_loading(); }
+    ~m_server() { close_server(); }
 
 };
-

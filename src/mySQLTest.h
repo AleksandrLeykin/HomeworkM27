@@ -15,17 +15,17 @@
 #endif
 
 struct mySQLTest {
-     mySQLTest();
-     ~mySQLTest();
+	mySQLTest();
+	~mySQLTest();
 
 	//добавление пользователя set user
-	std::string addingUser(const std::string& name, const std::string& surname, 
-	                    const std::string& email, const std::string& pas);	
+	std::string addingUser(const std::string& name, const std::string& surname,
+		const std::string& email, const std::string& pas);
 	//вход пользователя enter user
 	std::string userLogin(const std::string& name, const std::string& pass);
 
 	//просмотр пользователей
-	std::string getUser();	
+	std::string getUser();
 
 	//view messages просмотр сообщений
 	std::string viewMessages(const std::string name);
@@ -33,17 +33,17 @@ struct mySQLTest {
 	//writing Message запись сообщения
 	bool writingMessage(const std::string& name1, const std::string& name2, const std::string& strMes);
 
-private:     
-     //дескриптор
+private:
+	//дескриптор
 	MYSQL mysql;
 	//ссылка на структуру MYSQL_RES результат
 	MYSQL_RES* res;
 	//Представляет одну строку из результата, содержащего строки.
 	MYSQL_ROW row;
 
-     //создание таблиц
+	//создание таблиц
 	bool mySQLDB();
 
-     //подключение или создание БД
-	bool connectDB();	
+	//подключение или создание БД
+	bool connectDB();
 };

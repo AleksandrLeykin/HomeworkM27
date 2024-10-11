@@ -6,8 +6,7 @@ void myChat::interChat()
 {
     while (true)
     {
-        std::cout << "Для входа нажмите - v, дл¤ регистрации - r, дл¤ выхода - 3 или exit:\n"
-			      << "To enter, press - v, to register - r, to exit - 3 or exit: ";
+        std::cout  << "To enter, press - v, to register - r, to exit - 3 or exit: ";
         char symbol = getChar();        
 
         switch (symbol)
@@ -34,7 +33,7 @@ void myChat::interChat()
         }					
 			return;    
         default:
-            std::cout << "Введен не верный символ!! Invalid character entered!!" << "\n";
+            std::cout << "Invalid character entered!!" << "\n";
             break;
         }
     }   

@@ -20,32 +20,32 @@ const short BUFF_SIZE = 1024;
 
 class myClient {
 private:
-    int clientSocket{};
-    int connectionClient{};
-    struct sockaddr_in serverAddr;
-    struct sockaddr_in clientAddr;
+	int clientSocket{};
+	int connectionClient{};
+	struct sockaddr_in serverAddr;
+	struct sockaddr_in clientAddr;
 
-    std::string m_str = "";    
-   
-    //ввод строки (line input)
-    std::string getLineOfText() {
+	std::string m_str = "";
+
+	//ввод строки (line input)
+	std::string getLineOfText() {
 		std::string str = "";
-		getline(std::cin, str);		
- 		return str;
+		getline(std::cin, str);
+		return str;
 	}
-    //приём Передача Сообщения
-    std::string receptionTransmissionMes(int client_sock, const std::string& name);
-    void userMessage(int client_sock);
+	//приём Передача Сообщения
+	std::string receptionTransmissionMes(int client_sock, const std::string& name);
+	void userMessage(int client_sock);
 
 public:
-    myClient();
-    ~myClient();
+	myClient();
+	~myClient();
 
-    void setMyString(const std::string& str) {
-        m_str = str;
-    }
+	void setMyString(const std::string& str) {
+		m_str = str;
+	}
 
-    void clientLoading();
+	void clientLoading();
 };
 
 #elif defined(_WIN64)
@@ -57,4 +57,32 @@ public:
 
 #pragma comment(lib, "Ws2_32.lib")
 
+class myClient {
+public:
+	//client_loading();
+	myClient() { }
+	~myClient() { WSACleanup(); }
+
+	void setMyString(const std::string& str) {
+		m_str = str;
+	}
+	void clientLoading();
+private:
+	SOCKET clientSocket{};
+	int connectionClient{};
+	sockaddr_in serverAddr;
+	sockaddr_in clientAddr;
+
+	std::string m_str = "";
+	void userMessage(SOCKET client_sock);
+
+	std::string receptionTransmissionMes(SOCKET client_sock, const std::string& name);
+
+	//ввод строки (line input)
+	std::string getLineOfText() {
+		std::string str = "";
+		getline(std::cin, str);
+		return str;
+	}
+};
 #endif
