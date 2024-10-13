@@ -15,7 +15,9 @@ add_executable(${PROJECT_NAME}
                 src/mySQLTest.cpp 
                 src/mySQLTest.h 
                 src/serverTest.cpp 
-                src/serverTest.h)
+                src/serverTest.h 
+                src/Logger.cpp 
+                src/Logger.h)
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 

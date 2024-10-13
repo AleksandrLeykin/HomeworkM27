@@ -76,7 +76,7 @@ private:
     //Структура, описывающая адрес интернет-сокета.
     sockaddr_in serveraddr{}, clientaddr{};
     socklen_t length{};
-#if defined (__linux__)    
+#if defined (__linux__)
     
     // Создадим сокет  Let's create a socket
     int socket_server{}, socket_client{};

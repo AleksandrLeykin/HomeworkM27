@@ -1,4 +1,5 @@
 #include "mySQLTest.h"
+#include "Logger.h"
 // #include <cppconn/statement.h>
 // #include <cppconn/resultset.h>
 
@@ -60,8 +61,9 @@ bool mySQLTest::mySQLDB() {
 }
 
 bool mySQLTest::connectDB() {
-    mysql_init(&mysql);
-    if (&mysql == nullptr) {
+    //mysql_init(&mysql);
+	//if (&mysql == NULL)
+    if (!mysql_init(&mysql)) {
 		std::cout << "Error: can`t create MySQL - description" << std::endl;
 		return false;
 	}
@@ -185,6 +187,10 @@ std::string mySQLTest::viewMessages(const std::string name) {
 
 bool mySQLTest::writingMessage(const std::string &name1, const std::string &name2, const std::string &strMes)
 {
+	//указатель на Logger
+	std::shared_ptr<Logger> Log(new Logger);
+	Log->recordLogFile(name1 + " from " + name2);
+
     //подготовка запроса //preparing request
 	std::string selectMessage = "INSERT INTO messages(id, user1_id, user2_id, data_create, messages)"
 		" VALUES(default, "
