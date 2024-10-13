@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include "serverTest.h"
 #include <thread>
 #include "Logger.h" 
@@ -40,7 +41,7 @@ void ToExit() {
         Log->readLogFile();
         ToExit();
     }
-
+    
     if (c == 27) {
         // std::cout << "enter" << std::endl;
         exit(0);

@@ -189,7 +189,7 @@ bool mySQLTest::writingMessage(const std::string &name1, const std::string &name
 {
 	//указатель на Logger
 	std::shared_ptr<Logger> Log(new Logger);
-	Log->recordLogFile(name1 + " from " + name2);
+	Log->recordLogFile(name2 + " from " + name1);
 
     //подготовка запроса //preparing request
 	std::string selectMessage = "INSERT INTO messages(id, user1_id, user2_id, data_create, messages)"

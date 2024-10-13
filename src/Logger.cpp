@@ -1,11 +1,13 @@
 #include "Logger.h"
 #include <ctime>
 #include <chrono>
+#include <thread>
 
 Logger::Logger()
 {
-	//ios::in: файл открывается для ввода (чтения), 
-	// ios::app: файл открывается для дозаписи. Старые данные не удаляются.
+	//ios::in: file opens for input (reading) С„Р°Р№Р» РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РґР»СЏ РІРІРѕРґР° (С‡С‚РµРЅРёСЏ)
+	// ios::app: С„Р°Р№Р» РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РґР»СЏ РґРѕР·Р°РїРёСЃРё. РЎС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ РЅРµ СѓРґР°Р»СЏСЋС‚СЃСЏ.
+	//The file is opened for additional writing. Old data is not deleted.
 	m_log.open(m_logfile, std::ios::in | std::ios::app);
 }
 
@@ -15,11 +17,11 @@ Logger::~Logger()
 }
 
 void Logger::recordLogFile(const std::string& str) {
-	//защищаем потоки	
+	//protect flows Р·Р°С‰РёС‰Р°РµРј РїРѕС‚РѕРєРё
 	m_mutex.lock();
 		
 	if (m_log.is_open()) {
-		//пробую удалить окончоние строки
+		//I'm trying to remove the end of the line РїСЂРѕР±СѓСЋ СѓРґР°Р»РёС‚СЊ РѕРєРѕРЅС‡РѕРЅРёРµ СЃС‚СЂРѕРєРё
 		std::string str1 = fileWriteTime();
 		str1 = str1.erase(str1.size() - 1);
 		m_log << str1 << " " << str << "\n";
@@ -28,11 +30,14 @@ void Logger::recordLogFile(const std::string& str) {
 	m_mutex.unlock();
 }
 
+
+
 void Logger::readLogFile()
 {
 	std::this_thread::sleep_for(std::chrono::microseconds(100));
+	
 	m_mutex.lock_shared();
-	// окрываем файл для чтения
+	//open file for reading РѕРєСЂС‹РІР°РµРј С„Р°Р№Р» РґР»СЏ С‡С‚РµРЅРёСЏ
 	if (m_log.is_open()) {
 		while (std::getline(m_log, m_logEntry)) {
 			std::cout << m_logEntry << std::endl;

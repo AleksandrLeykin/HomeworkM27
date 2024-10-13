@@ -5,7 +5,7 @@
 #include <shared_mutex>
 #include <string>
 
-//отметка времени timestamp
+//timestamp РѕС‚РјРµС‚РєР° РІСЂРµРјРµРЅРё
 std::string fileWriteTime();
 
 class Logger {
@@ -13,7 +13,7 @@ public:
 	Logger();
 	~Logger();
 
-	//запись в файл write to file
+	//write to file Р·Р°РїРёСЃСЊ РІ С„Р°Р№Р»
 	void recordLogFile(const std::string& str);
 	//reading from file
 	void readLogFile();
