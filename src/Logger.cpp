@@ -1,7 +1,6 @@
 #include "Logger.h"
 #include <ctime>
-#include <chrono>
-#include <thread>
+
 
 Logger::Logger()
 {
@@ -26,6 +25,8 @@ void Logger::recordLogFile(const std::string& str) {
 		str1 = str1.erase(str1.size() - 1);
 		m_log << str1 << " " << str << "\n";
 	}
+	else
+		std::cout << "not file log!!" << std::endl;
 
 	m_mutex.unlock();
 }
@@ -43,6 +44,7 @@ void Logger::readLogFile()
 			std::cout << m_logEntry << std::endl;
 		}
 	}
+	std::cout << "not file log!!" << std::endl;
 	m_mutex.unlock_shared();
 }
 

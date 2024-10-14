@@ -267,7 +267,7 @@ void m_server::server_loading()
         std::cout << "Error Winsock initialisation #" << WSAGetLastError();
         return;
     }
-    else	std::cout << "WinSock initialisation is ok!" << std::endl;
+    // else	std::cout << "WinSock initialisation is ok!" << std::endl;
 
     socket_server = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_server == INVALID_SOCKET) {

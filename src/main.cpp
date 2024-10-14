@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 #include "serverTest.h"
-#include <thread>
+//#include <thread>
 #include "Logger.h" 
 
 #if defined (_WIN64)
@@ -52,6 +52,8 @@ void ToExit() {
 void ToExit() {
     //выход из сервера не доработано
     char c;
+    std::cout << std::endl;
+    std::this_thread::sleep_for(std::chrono::microseconds(10));
     std::cout << "To exit, press ESC and Enter. To display Logs, press 'l'." << std::endl;
     c = getch();
     
